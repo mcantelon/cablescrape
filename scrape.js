@@ -40,6 +40,7 @@ for (var index in dir) {
 // cycle through files, processing asynchronously
 var data = {'cables': {}}
 var cables_to_process = []
+var errors = []
 
 for (var index in cable_paths) {
 
@@ -59,32 +60,46 @@ for (var index in cable_paths) {
       var html = fs.readFileSync(cable_path)
       var cable_filename = cable_path.split('/')[cable_path.split('/').length - 1]
 
+      var error = false
+
       // set up virtual window DOM
-      var document = jsdom.jsdom(html)
-      var window = document.createWindow()
+      try {
+        var document = jsdom.jsdom(html)
+      } catch(error) {
+        error = true
+        errors.push(error.message)
+      }
 
-      // use JQuery to scrape cable text
-      jsdom.jQueryify(window, './lib/jquery-1.4.2.min.js' , function() {
-        window.$('pre').each(function(idx, item) {
+      if (!error && (document != undefined)) {
 
-          // make a spot for the cable in the global container for cables
-          if (!data.cables[cable_filename]) {
-            data.cables[cable_filename] = []
-          }
+        var window = document.createWindow()
 
-          // add scraped text to global container
-          var content = decoder.html_entity_decode(item.innerHTML)
-          content = content.replace(/&#x000A;/g, '<br />');
-          data.cables[cable_filename].push(content)
+        // use JQuery to scrape cable text
+        jsdom.jQueryify(window, './lib/jquery-1.4.2.min.js' , function() {
+          window.$('pre').each(function(idx, item) {
 
-          // remove cable from array of cables that need to be processed
-          var cable_index = cables_to_process.indexOf(cable_path)
-          if (cables_to_process[cable_index] != undefined) {
-            cables_to_process.splice([cable_index], 1)
-            open_files--
-          }
+            // make a spot for the cable in the global container for cables
+            if (!data.cables[cable_filename]) {
+              data.cables[cable_filename] = []
+            }
+
+            // add scraped text to global container
+            var content = decoder.html_entity_decode(item.innerHTML)
+            content = content.replace(/&#x000A;/g, '<br />');
+            data.cables[cable_filename].push(content)
+
+            // remove cable from array of cables that need to be processed
+            var cable_index = cables_to_process.indexOf(cable_path)
+            if (cables_to_process[cable_index] != undefined) {
+              cables_to_process.splice([cable_index], 1)
+              open_files--
+            }
+          })
         })
-      })
+      }
+      else {
+        open_files--
+      }
     }
     else {
 
