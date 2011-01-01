@@ -57,9 +57,6 @@ for (var index in cable_paths) {
     // don't attempt processing if too many files are open
     if (open_files < max_open_files) {
 
-      // JQueryify opens a file when it includes Jquery
-      open_files++
-
       // get cable web page HTML and extract filename from path
       var html = fs.readFileSync(cable_path)
       var cable_filename = cable_path.split('/')[cable_path.split('/').length - 1]
@@ -70,13 +67,15 @@ for (var index in cable_paths) {
       try {
         var document = jsdom.jsdom(html)
       } catch(error) {
-        error = true
         errors.push(error.message)
       }
 
       if (!error && (document != undefined)) {
 
         var window = document.createWindow()
+
+        // JQueryify opens a file when it includes Jquery
+        open_files++
 
         // use JQuery to scrape cable text
         jsdom.jQueryify(window, './lib/jquery-1.4.2.min.js' , function() {
