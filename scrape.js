@@ -70,7 +70,7 @@ for (var index in cable_paths) {
       try {
         var document = jsdom.jsdom(html)
       } catch(error) {
-        errors.push(error.message)
+        errors.push(cable_filename + ': ' + error.message)
       }
 
       if (!error && (document != undefined)) {
@@ -131,7 +131,16 @@ function wait() {
       wait()
     }
     else {
-      sys.puts(JSON.stringify(data))
+      if (argv['-o']) {
+        console.log('Saving file...')
+        fs.writeFile(argv['-o'], data, function (err) {
+          if (err) throw err
+          console.log('File saved.')
+        })
+      }
+      else {
+        sys.puts(JSON.stringify(data))
+      }
     }
   })
 }
