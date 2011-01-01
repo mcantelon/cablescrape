@@ -1,16 +1,20 @@
+#!/usr/bin/env node
 var jsdom  = require("./lib/jsdom/lib/jsdom"),
     window = jsdom.jsdom().createWindow(),
     fs = require('fs'),
     sys = require('sys'),
-    PHP_JS = require('./lib/entitieshandler')
+    PHP_JS = require('./lib/entitieshandler'),
+    argv = require('optimist')
+      .default('c', './cable')
+      .argv
 
 // use PHP port of HTML entity decoder
 var decoder = new PHP_JS.PHP_JS({'window': window})
 
-var cable_directory = './cable'
-var cable_paths = []
-var max_open_files = 25
-var open_files = 0
+var cable_directory = argv['c']
+var cable_paths =     []
+var max_open_files =  25
+var open_files =      0
 
 // get cable HTML files synchronously
 var dir = fs.readdirSync(cable_directory)
