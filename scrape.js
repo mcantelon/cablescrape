@@ -35,6 +35,9 @@ for (var index in dir) {
         for (var grandIndex in grandDir) {
           var file = grandPath + '/' + grandDir[grandIndex]
           cable_paths.push(file)
+          if (argv['s']) {
+            sys.puts('Found ' + cable_paths.length + ' cable files.')
+          }
         }
       }
     }
@@ -96,6 +99,9 @@ for (var index in cable_paths) {
             if (cables_to_process[cable_index] != undefined) {
               cables_to_process.splice([cable_index], 1)
               open_files--
+              if (argv['s']) {
+                sys.puts('Cables to process: ' + cables_to_process.length + ' / Open files: ' + open_files)
+              }
             }
           })
         })
