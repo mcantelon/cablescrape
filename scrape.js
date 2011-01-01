@@ -94,20 +94,19 @@ for (var index in cable_paths) {
             content = content.replace(/&#x000A;/g, '<br />');
             data.cables[cable_filename].push(content)
 
-            // remove cable from array of cables that need to be processed
-            var cable_index = cables_to_process.indexOf(cable_path)
-            if (cables_to_process[cable_index] != undefined) {
-              cables_to_process.splice([cable_index], 1)
-              open_files--
-              if (argv['s']) {
-                sys.puts('Cables to process: ' + cables_to_process.length + ' / Open files: ' + open_files)
-              }
-            }
           })
+
+          open_files--
+
+          // remove cable from array of cables that need to be processed
+          var cable_index = cables_to_process.indexOf(cable_path)
+          if (cables_to_process[cable_index] != undefined) {
+            cables_to_process.splice([cable_index], 1)
+            if (argv['s']) {
+              sys.puts('Cables to process: ' + cables_to_process.length + ' / Open files: ' + open_files)
+            }
+          }
         })
-      }
-      else {
-        open_files--
       }
     }
     else {
