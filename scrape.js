@@ -49,6 +49,18 @@ var data = {'cables': {}}
 var cables_to_process = []
 var errors = []
 
+function remove_cable_from_todo_list(cable_path) {
+
+  // remove cable from array of cables that need to be processed
+  var cable_index = cables_to_process.indexOf(cable_path)
+  if (cables_to_process[cable_index] != undefined) {
+    cables_to_process.splice([cable_index], 1)
+    if (argv['s']) {
+      sys.puts('Cables to process: ' + cables_to_process.length + ' / Open files: ' + open_files)
+    }
+  }
+}
+
 for (var index in cable_paths) {
 
   var cable_path = cable_paths[index]
@@ -98,15 +110,12 @@ for (var index in cable_paths) {
 
           open_files--
 
-          // remove cable from array of cables that need to be processed
-          var cable_index = cables_to_process.indexOf(cable_path)
-          if (cables_to_process[cable_index] != undefined) {
-            cables_to_process.splice([cable_index], 1)
-            if (argv['s']) {
-              sys.puts('Cables to process: ' + cables_to_process.length + ' / Open files: ' + open_files)
-            }
-          }
+          remove_cable_from_todo_list(cable_path)
         })
+      }
+      else {
+
+        remove_cable_from_todo_list(cable_path)
       }
     }
     else {
@@ -125,14 +134,15 @@ for (var index in cable_paths) {
 // wait for all cables to be processed then output JSON
 function wait() {
 
-  process.nextTick(function() {
+// process.nextTick(
+  setTimeout(function() {
     if (cables_to_process.length > 0) {
       wait()
     }
     else {
       if (argv['-o']) {
         console.log('Saving file...')
-        fs.writeFile(argv['-o'], data, function (err) {
+        fs.writeFile(argv['-o'], JSON.stringify(data), function (err) {
           if (err) throw err
           console.log('File saved.')
         })
@@ -141,6 +151,6 @@ function wait() {
         sys.puts(JSON.stringify(data))
       }
     }
-  })
+  }, 100)
 }
 wait()
