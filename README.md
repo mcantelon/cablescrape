@@ -1,11 +1,12 @@
 Cablescrape
 -----------
 
-WARNING: there seem to be some issues that prevent this from working well.
+WARNING: this is a work in progress.
 
 Requirements:
   node.js (tested with node 0.2.0 and v0.3.2-pre)
   htmlparser
+  optimist
 
 The scrape.js Node.js script parses downloaded Wikileaks cablegate web pages and
 uses the jsdom project's JQueryify function to parse content from them. Content
