@@ -79,7 +79,9 @@ function remove_cable_from_todo_list(cable_path) {
   }
   else {
     state.failed_removals++
-    sys.puts('Failed removal')
+    if (argv['s']) {
+      sys.puts('Failed removal')
+    }
   }
 }
 
